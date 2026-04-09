@@ -17,10 +17,17 @@ use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Complaint;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 class DummyDataSeeder extends Seeder
 {
+    /** UUID for tables that require it (works even if Eloquent model events are disabled). */
+    private function uuid(): string
+    {
+        return (string) Str::uuid();
+    }
+
     public function run(): void
     {
         // Create additional branches
@@ -72,7 +79,10 @@ class DummyDataSeeder extends Seeder
         ];
 
         foreach ($menuItems as $item) {
-            MenuItem::create(array_merge($item, ['branch_id' => $branch1->id]));
+            MenuItem::create(array_merge($item, [
+                'branch_id' => $branch1->id,
+                'uuid' => $this->uuid(),
+            ]));
         }
 
         $pakistaniCustomerNames = [
@@ -107,6 +117,7 @@ class DummyDataSeeder extends Seeder
             $customerName = $pakistaniCustomerNames[$i - 1] ?? "Customer $i";
             $customerSlug = strtolower(str_replace(' ', '.', $customerName));
             $customers[] = Customer::create([
+                'uuid' => $this->uuid(),
                 'branch_id' => $branch1->id,
                 'name' => $customerName,
                 'phone' => '9876543' . str_pad($i, 3, '0', STR_PAD_LEFT),
@@ -123,6 +134,7 @@ class DummyDataSeeder extends Seeder
             $supplierName = $pakistaniSupplierNames[$i - 1] ?? "Supplier $i";
             $supplierSlug = strtolower(str_replace(' ', '.', $supplierName));
             $suppliers[] = Supplier::create([
+                'uuid' => $this->uuid(),
                 'branch_id' => $branch1->id,
                 'name' => $supplierName,
                 'phone' => '9876543' . str_pad($i + 100, 3, '0', STR_PAD_LEFT),
@@ -137,6 +149,7 @@ class DummyDataSeeder extends Seeder
         for ($i = 1; $i <= 10; $i++) {
             $customer = $customers[array_rand($customers)];
             $quotation = Quotation::create([
+                'uuid' => $this->uuid(),
                 'branch_id' => $branch1->id,
                 'quotation_number' => 'QT-' . str_pad($i, 6, '0', STR_PAD_LEFT),
                 'revision_number' => 1,
@@ -185,6 +198,7 @@ class DummyDataSeeder extends Seeder
             $quotation = Quotation::where('status', 'approved')->inRandomOrder()->first();
             
             $order = Order::create([
+                'uuid' => $this->uuid(),
                 'branch_id' => $branch1->id,
                 'order_number' => 'ORD-' . str_pad($i, 6, '0', STR_PAD_LEFT),
                 'quotation_id' => $quotation?->id,
@@ -259,6 +273,7 @@ class DummyDataSeeder extends Seeder
         $completedOrders = Order::where('status', 'completed')->orWhere('status', 'confirmed')->get();
         foreach ($completedOrders as $order) {
             $invoice = Invoice::create([
+                'uuid' => $this->uuid(),
                 'branch_id' => $order->branch_id,
                 'invoice_number' => 'INV-' . str_pad(Invoice::count() + 1, 6, '0', STR_PAD_LEFT),
                 'customer_id' => $order->customer_id,
@@ -275,6 +290,7 @@ class DummyDataSeeder extends Seeder
             if (rand(0, 1)) {
                 $paymentAmount = rand(1000, (int)$invoice->balance_due);
                 $payment = Payment::create([
+                    'uuid' => $this->uuid(),
                     'branch_id' => $invoice->branch_id,
                     'type' => 'customer',
                     'reference_id' => $invoice->customer_id,
@@ -300,6 +316,7 @@ class DummyDataSeeder extends Seeder
             $order = $orders[array_rand($orders)];
             
             Invoice::create([
+                'uuid' => $this->uuid(),
                 'branch_id' => $branch1->id,
                 'invoice_number' => 'INV-' . str_pad(Invoice::count() + 1, 6, '0', STR_PAD_LEFT),
                 'customer_id' => $customer->id,
@@ -318,6 +335,7 @@ class DummyDataSeeder extends Seeder
         for ($i = 1; $i <= 8; $i++) {
             $order = Order::inRandomOrder()->first();
             Complaint::create([
+                'uuid' => $this->uuid(),
                 'branch_id' => $branch1->id,
                 'complaint_number' => 'COMP-' . str_pad($i, 6, '0', STR_PAD_LEFT),
                 'order_id' => rand(0, 1) ? $order->id : null,
@@ -333,6 +351,7 @@ class DummyDataSeeder extends Seeder
         for ($i = 1; $i <= 10; $i++) {
             $supplier = $suppliers[array_rand($suppliers)];
             Payment::create([
+                'uuid' => $this->uuid(),
                 'branch_id' => $branch1->id,
                 'type' => 'supplier',
                 'reference_id' => $supplier->id,

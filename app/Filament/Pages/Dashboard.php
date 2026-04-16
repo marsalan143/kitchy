@@ -12,14 +12,14 @@ class Dashboard extends BaseDashboard
     protected function getHeaderWidgets(): array
     {
         return [
-            \App\Filament\Widgets\KpiOverviewWidget::class,
+            // \App\Filament\Widgets\KpiOverviewWidget::class,
         ];
     }
 
     protected function getFooterWidgets(): array
     {
         return [
-            Widgets\AccountWidget::class,
+            // Widgets\AccountWidget::class,
         ];
     }
 

@@ -16,4 +16,4 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         port: ${{ secrets.SSH_PORT }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: cd ${{ secrets.SSH_PATH }} && ./.scripts/deploy.sh
+        script: cd ${{ secrets.SSH_PATH }} && ./.scripts/kitchy-laravel-deply.sh

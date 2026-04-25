@@ -64,7 +64,7 @@ class KpiOverviewWidget extends BaseWidget
 
         return [
             Stat::make("Today's Orders", $ordersTodayCount)
-                ->description('Total: ₹' . number_format($ordersTodayTotal, 2))
+                ->description('Total: Rs. ' . number_format($ordersTodayTotal, 2))
                 ->descriptionIcon('heroicon-m-shopping-cart')
                 ->color('success')
                 ->chart([7, 12, 15, 20, $ordersTodayCount])
@@ -76,13 +76,13 @@ class KpiOverviewWidget extends BaseWidget
                 ->color($upcomingEventsCount > 0 ? 'info' : 'gray')
                 ->icon('heroicon-o-calendar'),
 
-            Stat::make('Pending Customer Dues', '₹' . number_format($pendingDuesTotal, 2))
+            Stat::make('Pending Customer Dues', 'Rs. ' . number_format($pendingDuesTotal, 2))
                 ->description($pendingDuesCount . ' unpaid invoice' . ($pendingDuesCount !== 1 ? 's' : ''))
                 ->descriptionIcon('heroicon-m-currency-dollar')
                 ->color('warning')
                 ->icon('heroicon-o-banknotes'),
 
-            Stat::make('Supplier Payables', '₹' . number_format($supplierPayables, 2))
+            Stat::make('Supplier Payables', 'Rs. ' . number_format($supplierPayables, 2))
                 ->description($supplierPayables > 0 ? 'Outstanding payments' : 'All paid')
                 ->descriptionIcon('heroicon-m-truck')
                 ->color($supplierPayables > 0 ? 'danger' : 'success')

@@ -25,75 +25,95 @@ class QuotationResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('customer_id')
-                    ->relationship('customer', 'name')
-                    ->required()
-                    ->searchable()
-                    ->preload(),
-                Forms\Components\DatePicker::make('event_date')
-                    ->required(),
-                Forms\Components\DatePicker::make('expiry_date'),
-                Forms\Components\Repeater::make('items')
-                    ->relationship('items')
+                Forms\Components\Section::make()
                     ->schema([
-                        Forms\Components\Select::make('menu_item_id')
-                            ->relationship('menuItem', 'name')
+                        Forms\Components\Select::make('customer_id')
+                            ->relationship('customer', 'name')
                             ->required()
                             ->searchable()
-                            ->preload()
-                            ->reactive()
-                            ->afterStateUpdated(function ($state, Forms\Set $set) {
-                                if ($state) {
-                                    $menuItem = \App\Models\MenuItem::find($state);
-                                    if ($menuItem) {
-                                        $set('unit_price', $menuItem->price_per_unit);
-                                    }
-                                }
-                            }),
-                        Forms\Components\TextInput::make('quantity')
-                            ->numeric()
-                            ->required()
-                            ->default(1)
-                            ->reactive()
-                            ->afterStateUpdated(function ($state, Forms\Set $set, $get) {
-                                $quantity = $state ?? 0;
-                                $unitPrice = $get('unit_price') ?? 0;
-                                $set('total', $quantity * $unitPrice);
-                            }),
-                        Forms\Components\TextInput::make('unit_price')
-                            ->numeric()
-                            ->required()
-                            ->disabled()
-                            ->dehydrated(),
-                        Forms\Components\TextInput::make('total')
-                            ->numeric()
-                            ->disabled()
-                            ->dehydrated(),
+                            ->preload(),
+                        Forms\Components\DatePicker::make('event_date')
+                            ->required(),
+                        Forms\Components\DatePicker::make('expiry_date'),
                     ])
-                    ->columns(4)
-                    ->defaultItems(1)
-                    ->required(),
-                Forms\Components\Toggle::make('gst_enabled')
-                    ->reactive(),
-                Forms\Components\TextInput::make('gst_percentage')
-                    ->numeric()
-                    ->default(0)
-                    ->visible(fn ($get) => $get('gst_enabled'))
-                    ->required(fn ($get) => $get('gst_enabled')),
-                Forms\Components\TextInput::make('discount')
-                    ->numeric()
-                    ->default(0)
-                    ->visible(fn () => Auth::user()?->can('discounts.apply')),
-                Forms\Components\Select::make('status')
-                    ->options([
-                        'draft' => 'Draft',
-                        'sent' => 'Sent',
-                        'approved' => 'Approved',
-                        'rejected' => 'Rejected',
+                    ->columns(2),
+
+                Forms\Components\Section::make('Items')
+                    ->schema([
+                        Forms\Components\Repeater::make('items')
+                            ->relationship('items')
+                            ->schema([
+                                Forms\Components\Select::make('menu_item_id')
+                                    ->relationship('menuItem', 'name')
+                                    ->required()
+                                    ->searchable()
+                                    ->preload()
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                        if ($state) {
+                                            $menuItem = \App\Models\MenuItem::find($state);
+                                            if ($menuItem) {
+                                                $set('unit_price', $menuItem->price_per_unit);
+                                                $set('unit_type', $menuItem->unit_type);
+                                            }
+                                        }
+                                    }),
+                                Forms\Components\TextInput::make('unit_type')
+                                    ->label('Unit')
+                                    ->disabled()
+                                    ->dehydrated(false),
+                                Forms\Components\TextInput::make('quantity')
+                                    ->numeric()
+                                    ->required()
+                                    ->default(1)
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, Forms\Set $set, $get) {
+                                        $quantity = $state ?? 0;
+                                        $unitPrice = $get('unit_price') ?? 0;
+                                        $set('total', $quantity * $unitPrice);
+                                    }),
+                                Forms\Components\TextInput::make('unit_price')
+                                    ->numeric()
+                                    ->required()
+                                    ->disabled()
+                                    ->dehydrated(),
+                                Forms\Components\TextInput::make('total')
+                                    ->numeric()
+                                    ->disabled()
+                                    ->dehydrated(),
+                            ])
+                            ->columns(5)
+                            ->defaultItems(1)
+                            ->required()
+                            ->hiddenLabel(),
+                    ]),
+
+                Forms\Components\Section::make()
+                    ->schema([
+                        Forms\Components\Toggle::make('gst_enabled')
+                            ->reactive(),
+                        Forms\Components\TextInput::make('gst_percentage')
+                            ->numeric()
+                            ->default(0)
+                            ->visible(fn ($get) => $get('gst_enabled'))
+                            ->required(fn ($get) => $get('gst_enabled')),
+                        Forms\Components\TextInput::make('discount')
+                            ->numeric()
+                            ->default(0)
+                            ->visible(fn () => Auth::user()?->can('discounts.apply')),
+                        Forms\Components\Select::make('status')
+                            ->options([
+                                'draft' => 'Draft',
+                                'sent' => 'Sent',
+                                'approved' => 'Approved',
+                                'rejected' => 'Rejected',
+                            ])
+                            ->default('draft')
+                            ->required(),
                     ])
-                    ->default('draft')
-                    ->required(),
-            ]);
+                    ->columns(2),
+            ])
+            ->columns(1);
     }
 
     public static function table(Table $table): Table

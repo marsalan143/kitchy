@@ -58,6 +58,13 @@ class Quotation extends Model
             if (empty($model->branch_id) && auth()->check() && auth()->user()->branch_id) {
                 $model->branch_id = auth()->user()->branch_id;
             }
+            if (empty($model->quotation_number)) {
+                $last = static::withoutGlobalScopes()->max('id') ?? 0;
+                $model->quotation_number = 'QT-' . str_pad($last + 1, 5, '0', STR_PAD_LEFT);
+            }
+            if (empty($model->revision_number)) {
+                $model->revision_number = 1;
+            }
         });
     }
 

@@ -31,7 +31,7 @@ class SupplierPayablesWidget extends BaseWidget
         $total = abs($openingBalance) - $paymentsMade;
 
         return [
-            Stat::make('Supplier Payables', '₹' . number_format(max(0, $total), 2))
+            Stat::make('Supplier Payables', 'Rs. ' . number_format(max(0, $total), 2))
                 ->description($total > 0 ? 'Outstanding payments' : 'All paid')
                 ->descriptionIcon('heroicon-m-truck')
                 ->color($total > 0 ? 'danger' : 'success')

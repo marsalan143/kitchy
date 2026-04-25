@@ -24,7 +24,7 @@ class PendingDuesWidget extends BaseWidget
         $count = $query->count();
 
         return [
-            Stat::make('Pending Customer Dues', '₹' . number_format($total, 2))
+            Stat::make('Pending Customer Dues', 'Rs. ' . number_format($total, 2))
                 ->description($count . ' unpaid invoice' . ($count !== 1 ? 's' : ''))
                 ->descriptionIcon('heroicon-m-currency-dollar')
                 ->color('warning')

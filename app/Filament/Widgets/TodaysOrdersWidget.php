@@ -24,7 +24,7 @@ class TodaysOrdersWidget extends BaseWidget
 
         return [
             Stat::make('Today\'s Orders', $count)
-                ->description('Total: ₹' . number_format($total, 2))
+                ->description('Total: Rs. ' . number_format($total, 2))
                 ->descriptionIcon('heroicon-m-shopping-cart')
                 ->color('success')
                 ->chart([7, 12, 15, 20, $count])
